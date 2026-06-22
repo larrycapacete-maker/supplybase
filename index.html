@@ -1921,7 +1921,7 @@ function exportDetailedCSV() {
       cost,
       total.toFixed(2),
       l.notes || '',
-      l.performedBy || '',
+      l.by || '',
       l.ref || ''
     ].map(v => '"' + String(v).replace(/"/g, '""') + '"');
     rows.push(row.join(','));
