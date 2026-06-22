@@ -11,37 +11,68 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    --bg: #060A06;
-    --surface: #0f160f;
-    --surface2: #162016;
-    --border: #1e2e1e;
-    --accent: #4dff6e;
-    --accent-dim: #1a3d22;
-    --accent2: #29cc4a;
-    --danger: #ff4d4d;
-    --warn: #f5a623;
-    --ok: #4dff6e;
-    --text: #e8f0e8;
-    --muted: #5a7a5a;
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --surface2: #f8f9fa;
+    --surface-alt: #f0f1f4;
+    --border: #e2e4e9;
+    --accent: #16a34a;
+    --accent-dim: #dcfce7;
+    --accent2: #15803d;
+    --danger: #dc2626;
+    --warn: #d97706;
+    --ok: #16a34a;
+    --text: #0f172a;
+    --muted: #64748b;
     --radius: 8px;
+    --sidebar-bg: #0c0c0c;
+    --sidebar-border: #1e1e1e;
+    --sidebar-text: #e2e8f0;
+    --sidebar-muted: #64748b;
+    --sidebar-hover: #1a1a1a;
+    --sidebar-active-bg: rgba(34,197,94,0.12);
+    --sidebar-active-text: #22c55e;
+    --sidebar-width: 240px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   button { cursor: pointer; }
-  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif; font-size: 14px; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif; font-size: 14px; display: flex; min-height: 100vh; }
   h1 { font-size: 1.4rem; font-weight: 700; }
   h2 { font-size: 1rem; font-weight: 600; margin-bottom: 12px; }
 
-  /* Layout */
-  header { background: #060A06; border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; box-shadow: 0 1px 0 var(--border); }
-  header .logo { display: flex; align-items: center; gap: 8px; }
-  header .logo span { font-size: 1.4rem; }
-  .header-actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
-  main { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
+  /* Sidebar */
+  .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; overflow-y: auto; }
+  .sidebar-header { padding: 20px 18px 16px; border-bottom: 1px solid var(--sidebar-border); }
+  .sidebar-app-name { color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-top: 4px; }
+  .sidebar-nav { padding: 10px 0; flex: 1; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: var(--sidebar-muted); cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 6px; margin: 2px 10px; transition: .15s; user-select: none; }
+  .nav-item:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+  .nav-item.active { background: var(--sidebar-active-bg); color: var(--sidebar-active-text); font-weight: 600; }
+  .sidebar-bottom { padding: 14px; border-top: 1px solid var(--sidebar-border); }
+  .sidebar-role-badge { font-size: 13px; color: #94a3b8; background: #1a1a1a; border-radius: 6px; padding: 8px 12px; margin-bottom: 10px; font-weight: 500; word-break: break-word; }
+  .sidebar-actions { display: flex; flex-direction: column; gap: 5px; }
+  .sidebar-action-btn { width: 100%; padding: 8px 12px; border-radius: 6px; border: none; background: #1a1a1a; color: #94a3b8; font-size: 13px; font-weight: 500; text-align: left; cursor: pointer; transition: .15s; }
+  .sidebar-action-btn:hover { background: #252525; color: #e2e8f0; }
+  .sidebar-action-primary { background: var(--accent) !important; color: #fff !important; font-weight: 600; }
+  .sidebar-action-primary:hover { background: var(--accent2) !important; }
+  .sidebar-action-danger { color: #f87171 !important; }
+  .sidebar-action-signout { color: #64748b !important; margin-top: 4px; font-size: 13px; }
+
+  /* Main wrap */
+  .main-wrap { margin-left: var(--sidebar-width); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* Topbar */
+  .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 28px; display: flex; align-items: center; position: sticky; top: 0; z-index: 40; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  .page-title { font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--text); }
+  .topbar-right { margin-left: auto; }
+
+  /* Main content */
+  main { padding: 24px 28px; }
 
   /* Summary cards */
   .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; border-left: 3px solid var(--border); transition: background .15s, border-color .15s; }
-  .card[onclick]:hover { background: var(--surface-alt, #1a221a); border-color: rgba(255,255,255,0.15); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; border-left: 3px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,.05); transition: background .15s, border-color .15s; }
+  .card[onclick]:hover { background: var(--surface-alt); border-color: rgba(0,0,0,0.12); }
   .card .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
   .card .value { font-size: 1.6rem; font-weight: 700; }
   .card.danger { border-left-color: var(--danger); }
@@ -51,11 +82,7 @@
   .card.ok { border-left-color: var(--accent); }
   .card.ok .value { color: var(--accent); }
 
-  /* Tabs */
-  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
-  .tab { padding: 8px 16px; cursor: pointer; border-radius: 6px 6px 0 0; color: var(--muted); border: 1px solid transparent; border-bottom: none; transition: .15s; font-weight: 500; }
-  .tab:hover { color: var(--text); background: var(--surface); }
-  .tab.active { color: var(--accent); background: var(--surface); border-color: var(--border); border-bottom-color: var(--surface); border-top: 2px solid var(--accent); }
+  /* Tab panels (no tab bar - nav is in sidebar) */
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
 
@@ -72,26 +99,26 @@
   .stock-bar { flex: 1; height: 6px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
   .stock-bar-fill { height: 100%; border-radius: 99px; transition: width .3s; }
   .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
-  .badge-ok { background: rgba(77,255,110,0.12); color: var(--ok); }
-  .badge-warn { background: #78350f33; color: var(--warn); }
-  .badge-danger { background: #7f1d1d33; color: var(--danger); }
-  .badge-info { background: #1e3a8a33; color: #93c5fd; }
+  .badge-ok { background: #dcfce7; color: #15803d; }
+  .badge-warn { background: #fef3c7; color: #92400e; }
+  .badge-danger { background: #fee2e2; color: #991b1b; }
+  .badge-info { background: #dbeafe; color: #1e40af; }
   .actions-cell { display: flex; gap: 6px; }
 
   /* Buttons */
   .btn { padding: 7px 14px; border-radius: 7px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: .15s; display: inline-flex; align-items: center; gap: 5px; }
-  .btn-primary { background: var(--accent); color: #060A06; font-weight: 600; }
+  .btn-primary { background: var(--accent); color: #fff; font-weight: 600; }
   .btn-primary:hover { background: var(--accent2); }
-  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .btn-secondary:hover { background: var(--surface); }
-  .btn-danger { background: #7f1d1d44; color: var(--danger); border: 1px solid #7f1d1d66; }
-  .btn-danger:hover { background: #7f1d1d77; }
+  .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--surface2); }
+  .btn-danger { background: #fee2e2; color: var(--danger); border: 1px solid #fecaca; }
+  .btn-danger:hover { background: #fecaca; }
   .btn-sm { padding: 4px 9px; font-size: 12px; }
-  .btn-icon { padding: 5px 7px; background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-icon { padding: 5px 7px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
   .btn-icon:hover { color: var(--text); background: var(--surface2); }
 
   /* Modal */
-  .modal-bg { display: none; position: fixed; inset: 0; background: #00000088; z-index: 100; align-items: center; justify-content: center; }
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
   .modal-bg.open { display: flex; }
   .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
   .modal h2 { margin-bottom: 18px; }
@@ -102,13 +129,13 @@
   .form-group { display: flex; flex-direction: column; gap: 5px; }
   .form-group.full { grid-column: 1 / -1; }
   label { font-size: 12px; color: var(--muted); font-weight: 500; }
-  input, select, textarea { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 7px; padding: 8px 10px; font-size: 13px; width: 100%; outline: none; transition: border .15s; }
-  input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(77,255,110,0.12); }
+  input, select, textarea { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 7px; padding: 8px 10px; font-size: 13px; width: 100%; outline: none; transition: border .15s; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(22,163,74,0.12); }
   #lf-item-search:focus { border-radius: 7px 7px 0 0; }
   input[type="date"] { cursor: pointer; }
-  input[type="date"]::-webkit-calendar-picker-indicator { filter: brightness(0) invert(1); cursor: pointer; padding: 2px; opacity: 0.75; }
+  input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; padding: 2px; opacity: 0.6; }
   input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
-  select option { background: var(--surface); }
+  select option { background: var(--surface); color: var(--text); }
   textarea { resize: vertical; min-height: 60px; }
 
   /* Filters */
@@ -118,7 +145,7 @@
   .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); }
 
   /* Alert banner */
-  .alert-banner { background: rgba(255,77,77,0.08); border: 1px solid rgba(255,77,77,0.3); border-radius: var(--radius); padding: 10px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .alert-banner { background: #fee2e2; border: 1px solid #fecaca; border-radius: var(--radius); padding: 10px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
   .alert-banner.hidden { display: none; }
   .alert-icon { color: var(--danger); font-size: 1.1rem; }
 
@@ -132,11 +159,11 @@
 
   /* Log entry */
   .status-chip { background: transparent; border: 1px solid; border-radius: 99px; padding: 4px 11px; font-size: 11px; font-weight: 600; cursor: pointer; transition: background .15s, opacity .15s; opacity: 0.5; }
-  .status-chip.active { opacity: 1; background: rgba(255,255,255,0.08); }
+  .status-chip.active { opacity: 1; background: rgba(0,0,0,0.06); }
   .rl-wrap .rl-x { opacity: 0; transition: opacity .15s; }
   .rl-wrap:hover .rl-x { opacity: 1; }
   .log-entry { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start; transition: background .12s; }
-  .log-entry:hover { background: var(--surface-alt, #1a221a); }
+  .log-entry:hover { background: var(--surface2); }
   .log-meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
   .log-qty { font-size: 1.1rem; font-weight: 700; }
 
@@ -146,37 +173,53 @@
   .sort-arrow { font-size: 10px; margin-left: 3px; opacity: 0.5; }
   .sort-arrow.active { opacity: 1; color: var(--accent); font-weight:700; }
 
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .main-wrap { margin-left: 0; }
+  }
   @media (max-width: 600px) {
     .form-grid { grid-template-columns: 1fr; }
-    main { padding: 14px 12px; }
-    header { padding: 12px 14px; }
+    main { padding: 14px 16px; }
     .summary { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">
-    <img src="https://www.golocad.com/images/LOCAD-LOGO-WHITE.svg" alt="Locad" style="height:22px;margin-right:4px">
-    <span style="color:var(--muted);font-size:1rem;font-weight:400;margin:0 8px">|</span>
-    <h1 style="font-size:1rem;font-weight:600;letter-spacing:.02em;color:var(--text)">SupplyBase</h1>
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="https://www.golocad.com/images/LOCAD-LOGO-WHITE.svg" alt="Locad" style="height:20px;display:block;margin-bottom:6px" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Empty.png/1px-Empty.png'">
+    <div class="sidebar-app-name">SupplyBase</div>
   </div>
-  <div style="margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-    <span id="role-badge" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:rgba(77,255,110,0.12);color:var(--accent);letter-spacing:.05em;text-transform:uppercase"></span>
-  <div class="header-actions" style="margin-left:0">
-    <button id="btn-add-item" class="btn btn-primary" onclick="openItemModal()">+ Add Item</button>
-    <button id="btn-refresh" class="btn btn-secondary" onclick="refreshData()" title="Refresh data from Google Sheets">↻ Refresh</button>
-    <button id="btn-reset" class="btn btn-secondary" onclick="confirmReset()" style="color:var(--danger);border-color:rgba(255,77,77,0.3)">↺ Reset</button>
-    <button id="btn-settings" class="btn btn-secondary" onclick="openSettings()">⚙ Settings</button>
-    <button id="btn-contact-admin" class="btn btn-secondary" onclick="openContactAdmin()">📞 Contact Admin</button>
-    <button id="btn-change-pass" class="btn btn-secondary" onclick="openChangePassword()">🔑 Change Password</button>
-    <button class="btn btn-secondary" onclick="logout()">Sign out</button>
+  <nav class="sidebar-nav">
+    <div id="nav-inventory" class="nav-item active" data-tab="inventory" onclick="switchTab('inventory')">📋 <span>Inventory</span></div>
+    <div id="nav-usage" class="nav-item" data-tab="usage" onclick="switchTab('usage')">📝 <span>Usage Log</span></div>
+    <div id="nav-reorder" class="nav-item" data-tab="reorder" onclick="switchTab('reorder')">🔄 <span>Reorder</span></div>
+    <div id="nav-report" class="nav-item" data-tab="report" onclick="switchTab('report')">💰 <span>Cost Report</span></div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div id="role-badge" class="sidebar-role-badge"></div>
+    <div class="sidebar-actions">
+      <button id="btn-add-item" class="sidebar-action-btn sidebar-action-primary" onclick="openItemModal()">+ Add Item</button>
+      <button id="btn-settings" class="sidebar-action-btn" onclick="openSettings()">⚙ Settings</button>
+      <button id="btn-change-pass" class="sidebar-action-btn" onclick="openChangePassword()">🔑 Change Password</button>
+      <button id="btn-contact-admin" class="sidebar-action-btn" onclick="openContactAdmin()">📞 Contact Admin</button>
+      <button id="btn-refresh" class="sidebar-action-btn" onclick="refreshData()">↻ Refresh</button>
+      <button id="btn-reset" class="sidebar-action-btn sidebar-action-danger" onclick="confirmReset()">↺ Reset</button>
+      <button class="sidebar-action-btn sidebar-action-signout" onclick="logout()">Sign out</button>
+    </div>
   </div>
-  </div>
-</header>
+</aside>
 
-<main>
+<!-- MAIN AREA -->
+<div class="main-wrap">
+  <header class="topbar">
+    <h1 class="page-title" id="page-title">INVENTORY</h1>
+    <div class="topbar-right"></div>
+  </header>
+  <main>
+
   <!-- Summary Cards -->
   <div class="summary">
     <div class="card" onclick="filterInventory('')" style="cursor:pointer" title="Show all items">
@@ -199,19 +242,10 @@
       <div class="label">Reorders Pending</div>
       <div class="value" id="s-reorder">0</div>
     </div>
-    <div class="card" onclick="switchTab('usage')" style="cursor:pointer" title="Go to Usage Log tab">
-      <div class="label">Log Entries</div>
-      <div class="value" id="s-logs">0</div>
+    <div class="card" onclick="switchTab('report')" style="cursor:pointer" title="Go to Cost Report">
+      <div class="label">📅 This Week's Expenses</div>
+      <div class="value" id="s-value" style="font-size:1.2rem">₱0</div>
     </div>
-  </div>
-
-
-  <!-- Tabs -->
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('inventory')">📋 Inventory</div>
-    <div class="tab" onclick="switchTab('usage')">📝 Usage Log</div>
-    <div class="tab" onclick="switchTab('reorder')">🔄 Reorder</div>
-    <div class="tab" onclick="switchTab('report')">💰 Cost Report</div>
   </div>
 
   <!-- INVENTORY TAB -->
@@ -234,7 +268,8 @@
       <table>
         <thead>
           <tr>
-            <th onclick="sortBy('seq')" title="Master List order"># <span class="sort-arrow active" id="sort-seq">↑</span></th><th onclick="sortBy('name')">Item <span class="sort-arrow" id="sort-name">↕</span></th>
+            <th onclick="sortBy('seq')" title="Master List order"># <span class="sort-arrow active" id="sort-seq">↑</span></th>
+            <th onclick="sortBy('name')">Item <span class="sort-arrow" id="sort-name">↕</span></th>
             <th onclick="sortBy('sku')">SKU <span class="sort-arrow" id="sort-sku">↕</span></th>
             <th onclick="sortBy('category')">Category <span class="sort-arrow" id="sort-category">↕</span></th>
             <th onclick="sortBy('qty')">Stock <span class="sort-arrow" id="sort-qty">↕</span></th>
@@ -259,10 +294,10 @@
         <span class="search-icon">🔍</span>
         <input type="text" id="log-search" placeholder="Search logs..." oninput="renderLogs()">
       </div>
-      <select id="log-filter-item" onchange="renderLogs()">
+      <select id="log-filter-item" onchange="renderLogs()" style="width:auto;max-width:220px">
         <option value="">All Items</option>
       </select>
-      <select id="log-filter-type" onchange="renderLogs()">
+      <select id="log-filter-type" onchange="renderLogs()" style="width:auto">
         <option value="">All Types</option>
         <option value="use">Use</option>
         <option value="restock">Restock</option>
@@ -306,7 +341,112 @@
     </div>
     <div class="empty hidden" id="reorder-empty"><div class="icon">🔄</div><p>No reorder records yet.</p></div>
   </div>
-</main>
+
+  <!-- COST REPORT TAB -->
+  <div class="tab-panel" id="tab-report">
+    <div class="filters" style="margin-bottom:16px;flex-wrap:wrap">
+      <label style="color:var(--muted);font-size:12px;font-weight:500;align-self:center;white-space:nowrap">From</label>
+      <input type="date" id="rpt-from" style="width:150px;flex:0 0 auto" onchange="renderReport();renderVariance()">
+      <label style="color:var(--muted);font-size:12px;font-weight:500;align-self:center;white-space:nowrap">To</label>
+      <input type="date" id="rpt-to" style="width:150px;flex:0 0 auto" onchange="renderReport();renderVariance()">
+      <select id="rpt-type" style="flex:0 0 auto;width:auto" onchange="renderReport()">
+        <option value="use,damage">Consumption (Use + Damage)</option>
+        <option value="use">Use only</option>
+        <option value="damage">Damage / Loss only</option>
+        <option value="restock">Restock only</option>
+      </select>
+      <select id="rpt-cat" style="flex:0 0 auto;width:auto" onchange="renderReport()">
+        <option value="">All Categories</option>
+      </select>
+      <button class="btn btn-secondary" onclick="exportReportCSV()">⬇ Export Summary CSV</button>
+      <button class="btn btn-secondary" onclick="exportDetailedCSV()">⬇ Export Detailed Log</button>
+    </div>
+
+    <div class="summary" style="margin-bottom:18px" id="rpt-summary">
+      <div class="card">
+        <div class="label">Total Cost Consumed</div>
+        <div class="value" id="rpt-total-cost" style="color:var(--danger)">₱0.00</div>
+      </div>
+      <div class="card">
+        <div class="label">Total Units Consumed</div>
+        <div class="value" id="rpt-total-qty">0</div>
+      </div>
+      <div class="card">
+        <div class="label">Unique Items</div>
+        <div class="value" id="rpt-unique">0</div>
+      </div>
+      <div class="card">
+        <div class="label">Log Entries</div>
+        <div class="value" id="rpt-entries">0</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortReport('name')">Item <span class="sort-arrow" id="rsort-name">↕</span></th>
+            <th onclick="sortReport('category')">Category <span class="sort-arrow" id="rsort-category">↕</span></th>
+            <th onclick="sortReport('unit')">Unit</th>
+            <th onclick="sortReport('costPerUnit')">Cost / Unit <span class="sort-arrow" id="rsort-costPerUnit">↕</span></th>
+            <th onclick="sortReport('totalQty')">Qty Consumed <span class="sort-arrow" id="rsort-totalQty">↕</span></th>
+            <th onclick="sortReport('totalCost')">Total Cost <span class="sort-arrow" id="rsort-totalCost">↕</span></th>
+            <th onclick="sortReport('entries')">Log Entries <span class="sort-arrow" id="rsort-entries">↕</span></th>
+            <th>% of Total Cost</th>
+          </tr>
+        </thead>
+        <tbody id="rpt-tbody"></tbody>
+      </table>
+    </div>
+    <div class="empty hidden" id="rpt-empty"><div class="icon">💰</div><p>No consumption data for this period.</p></div>
+
+    <!-- VARIANCE SECTION -->
+    <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <h3 style="margin:0;font-size:1rem;color:var(--text)">📊 Variance Adjustments</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select id="var-type" onchange="renderVariance()" style="width:auto;flex:0 0 auto">
+            <option value="">All Variances</option>
+            <option value="negative">Negative (Shortage)</option>
+            <option value="positive">Positive (Excess)</option>
+          </select>
+          <button class="btn btn-secondary" onclick="exportVarianceCSV()">⬇ Export CSV</button>
+        </div>
+      </div>
+
+      <div class="summary" style="margin-bottom:18px">
+        <div class="card"><div class="label">Total Adjustments</div><div class="value" id="var-total">0</div></div>
+        <div class="card danger"><div class="label">⬇ Shortage (count)</div><div class="value" id="var-neg">0</div></div>
+        <div class="card danger"><div class="label">⬇ Cost of Shortage</div><div class="value" id="var-neg-cost" style="font-size:1.2rem">₱0</div></div>
+        <div class="card ok"><div class="label">⬆ Excess (count)</div><div class="value" id="var-pos">0</div></div>
+        <div class="card ok"><div class="label">⬆ Cost of Excess</div><div class="value" id="var-pos-cost" style="font-size:1.2rem">₱0</div></div>
+        <div class="card"><div class="label">Net Variance</div><div class="value" id="var-net">0</div></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Item</th>
+              <th>Category</th>
+              <th>Expected</th>
+              <th>Actual</th>
+              <th>Variance</th>
+              <th>Cost Impact</th>
+              <th>Reason</th>
+              <th>Performed By</th>
+            </tr>
+          </thead>
+          <tbody id="var-tbody"></tbody>
+        </table>
+      </div>
+      <div class="empty hidden" id="var-empty"><div class="icon">📊</div><p>No variance adjustments for this period.</p></div>
+    </div>
+  </div>
+
+  </main>
+</div>
 
 <!-- ADD/EDIT ITEM MODAL -->
 <div class="modal-bg" id="item-modal">
@@ -375,12 +515,12 @@
         <label>Item *</label>
         <input type="text" id="lf-item-search" placeholder="Type to search item…" autocomplete="off" oninput="filterItemDropdown()" onfocus="filterItemDropdown()" onblur="setTimeout(()=>closeItemDropdown(),180)">
         <input type="hidden" id="lf-item">
-        <div id="lf-item-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:200;background:var(--surface2);border:1px solid var(--border);border-radius:0 0 7px 7px;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
+        <div id="lf-item-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:200;background:var(--surface);border:1px solid var(--border);border-radius:0 0 7px 7px;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.15)"></div>
       </div>
-
       <div class="form-group">
         <label>Type *</label>
         <select id="lf-type" onchange="updateLogFormLabels()">
+          <option value="">— Select type —</option>
           <option value="use">Use (deduct)</option>
           <option value="restock">Restock (add)</option>
           <option value="adjust">Manual Adjust</option>
@@ -493,7 +633,6 @@
     <h2>Stock Adjustment</h2>
     <p style="color:var(--muted);margin-bottom:16px;font-size:13px" id="adjust-item-name"></p>
 
-    <!-- System qty vs variance cards -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">System qty</div>
@@ -501,13 +640,12 @@
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Variance</div>
-        <div style="font-size:1.6rem;font-weight:700" id="adj-variance-display" style="color:var(--muted)">—</div>
+        <div style="font-size:1.6rem;font-weight:700" id="adj-variance-display">—</div>
       </div>
     </div>
 
-    <!-- Mode toggle -->
     <div style="display:flex;gap:0;margin-bottom:14px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
-      <button id="adj-mode-physical" onclick="setAdjMode('physical')" style="flex:1;padding:7px 10px;background:var(--accent);color:#060A06;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:.15s">Physical Count</button>
+      <button id="adj-mode-physical" onclick="setAdjMode('physical')" style="flex:1;padding:7px 10px;background:var(--accent);color:#ffffff;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:.15s">Physical Count</button>
       <button id="adj-mode-variance" onclick="setAdjMode('variance')" style="flex:1;padding:7px 10px;background:transparent;color:var(--muted);border:none;cursor:pointer;font-size:12px;font-weight:500;transition:.15s">Enter Variance</button>
     </div>
 
@@ -548,7 +686,6 @@
       </div>
     </div>
 
-    <!-- Summary box -->
     <div id="adj-summary" style="display:none;border-radius:var(--radius);padding:10px 14px;margin-top:12px;font-size:13px"></div>
 
     <div class="modal-actions" style="margin-top:16px">
@@ -558,114 +695,155 @@
   </div>
 </div>
 
-  <!-- COST REPORT TAB -->
-  <div class="tab-panel" id="tab-report">
-    <div class="filters" style="margin-bottom:16px;flex-wrap:wrap">
-      <label style="color:var(--muted);font-size:12px;font-weight:500;align-self:center;white-space:nowrap">From</label>
-      <input type="date" id="rpt-from" style="width:150px;flex:0 0 auto" onchange="renderReport();renderVariance()">
-      <label style="color:var(--muted);font-size:12px;font-weight:500;align-self:center;white-space:nowrap">To</label>
-      <input type="date" id="rpt-to" style="width:150px;flex:0 0 auto" onchange="renderReport();renderVariance()">
-      <select id="rpt-type" style="flex:0 0 auto;width:auto" onchange="renderReport()">
-        <option value="use,damage">Consumption (Use + Damage)</option>
-        <option value="use">Use only</option>
-        <option value="damage">Damage / Loss only</option>
-        <option value="restock">Restock only</option>
-      </select>
-      <select id="rpt-cat" style="flex:0 0 auto;width:auto" onchange="renderReport()">
-        <option value="">All Categories</option>
-      </select>
-      <button class="btn btn-secondary" onclick="exportReportCSV()">⬇ Export Summary CSV</button>
-      <button class="btn btn-secondary" onclick="exportDetailedCSV()">⬇ Export Detailed Log</button>
-    </div>
-
-    <!-- Totals row -->
-    <div class="summary" style="margin-bottom:18px" id="rpt-summary">
-      <div class="card">
-        <div class="label">Total Cost Consumed</div>
-        <div class="value" id="rpt-total-cost" style="color:var(--danger)">₱0.00</div>
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal-bg" id="change-pass-modal">
+  <div class="modal" style="max-width:360px">
+    <h2>Change Password</h2>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Current Password</label>
+        <input type="password" id="cp-current" placeholder="Enter current password">
       </div>
-      <div class="card">
-        <div class="label">Total Units Consumed</div>
-        <div class="value" id="rpt-total-qty">0</div>
+      <div class="form-group full">
+        <label>New Password</label>
+        <input type="password" id="cp-new" placeholder="Min 4 characters">
       </div>
-      <div class="card">
-        <div class="label">Unique Items</div>
-        <div class="value" id="rpt-unique">0</div>
-      </div>
-      <div class="card">
-        <div class="label">Log Entries</div>
-        <div class="value" id="rpt-entries">0</div>
+      <div class="form-group full">
+        <label>Confirm New Password</label>
+        <input type="password" id="cp-confirm" placeholder="Repeat new password">
       </div>
     </div>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th onclick="sortReport('name')">Item <span class="sort-arrow" id="rsort-name">↕</span></th>
-            <th onclick="sortReport('category')">Category <span class="sort-arrow" id="rsort-category">↕</span></th>
-            <th onclick="sortReport('unit')">Unit</th>
-            <th onclick="sortReport('costPerUnit')">Cost / Unit <span class="sort-arrow" id="rsort-costPerUnit">↕</span></th>
-            <th onclick="sortReport('totalQty')">Qty Consumed <span class="sort-arrow" id="rsort-totalQty">↕</span></th>
-            <th onclick="sortReport('totalCost')">Total Cost <span class="sort-arrow" id="rsort-totalCost">↕</span></th>
-            <th onclick="sortReport('entries')">Log Entries <span class="sort-arrow" id="rsort-entries">↕</span></th>
-            <th>% of Total Cost</th>
-          </tr>
-        </thead>
-        <tbody id="rpt-tbody"></tbody>
-      </table>
-    </div>
-    <div class="empty hidden" id="rpt-empty"><div class="icon">💰</div><p>No consumption data for this period.</p></div>
-
-    <!-- VARIANCE SECTION -->
-    <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-        <h3 style="margin:0;font-size:1rem;color:var(--text)">📊 Variance Adjustments</h3>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <select id="var-type" onchange="renderVariance()" style="width:auto;flex:0 0 auto">
-            <option value="">All Variances</option>
-            <option value="negative">Negative (Shortage)</option>
-            <option value="positive">Positive (Excess)</option>
-          </select>
-          <button class="btn btn-secondary" onclick="exportVarianceCSV()">⬇ Export CSV</button>
-        </div>
-      </div>
-
-      <div class="summary" style="margin-bottom:18px">
-        <div class="card"><div class="label">Total Adjustments</div><div class="value" id="var-total">0</div></div>
-        <div class="card danger"><div class="label">⬇ Shortage (count)</div><div class="value" id="var-neg">0</div></div>
-        <div class="card danger"><div class="label">⬇ Cost of Shortage</div><div class="value" id="var-neg-cost" style="font-size:1.2rem">₱0</div></div>
-        <div class="card ok"><div class="label">⬆ Excess (count)</div><div class="value" id="var-pos">0</div></div>
-        <div class="card ok"><div class="label">⬆ Cost of Excess</div><div class="value" id="var-pos-cost" style="font-size:1.2rem">₱0</div></div>
-        <div class="card"><div class="label">Net Variance</div><div class="value" id="var-net">0</div></div>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Date & Time</th>
-              <th>Item</th>
-              <th>Category</th>
-              <th>Expected</th>
-              <th>Actual</th>
-              <th>Variance</th>
-              <th>Cost Impact</th>
-              <th>Reason</th>
-              <th>Performed By</th>
-            </tr>
-          </thead>
-          <tbody id="var-tbody"></tbody>
-        </table>
-      </div>
-      <div class="empty hidden" id="var-empty"><div class="icon">📊</div><p>No variance adjustments for this period.</p></div>
+    <p id="cp-msg" style="font-size:12px;min-height:18px;margin:4px 0 12px"></p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('change-pass-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveChangePassword()">Save</button>
     </div>
   </div>
+</div>
+
+<!-- SETTINGS MODAL (superuser only) -->
+<div class="modal-bg" id="settings-modal">
+  <div class="modal" style="max-width:400px">
+    <h2>Settings</h2>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Change passwords for each role.</p>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Superuser username</label>
+        <input type="text" id="set-admin-username" placeholder="Superuser username" autocomplete="off">
+      </div>
+      <div class="form-group full">
+        <label>Superuser password</label>
+        <input type="password" id="set-admin-pass" placeholder="New password (leave blank to keep)">
+      </div>
+      <div class="form-group full">
+        <label>User password</label>
+        <input type="password" id="set-user-pass" placeholder="New password">
+      </div>
+      <div class="form-group full">
+        <label>Viewer password</label>
+        <input type="password" id="set-viewer-pass" placeholder="New password">
+      </div>
+    </div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:16px 0 12px">
+    <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Contact info shown to users when they need help.</p>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Admin name</label>
+        <input type="text" id="set-contact-name" placeholder="e.g. John Santos" autocomplete="off">
+      </div>
+      <div class="form-group full">
+        <label>Email</label>
+        <input type="text" id="set-contact-email" placeholder="e.g. admin@company.com" autocomplete="off">
+      </div>
+      <div class="form-group full">
+        <label>Phone / Viber / WhatsApp</label>
+        <input type="text" id="set-contact-phone" placeholder="e.g. +63 917 123 4567" autocomplete="off">
+      </div>
+      <div class="form-group full">
+        <label>Additional note</label>
+        <input type="text" id="set-contact-note" placeholder="e.g. Available Mon–Fri, 9am–6pm" autocomplete="off">
+      </div>
+    </div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:16px 0 12px">
+    <p style="color:var(--muted);font-size:13px;margin-bottom:12px">🤖 AI Assistant — powered by Groq (free). Get your free API key at <span style="color:var(--accent);user-select:all;cursor:text">console.groq.com</span> → API Keys → Create API Key.</p>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Groq API Key</label>
+        <input type="password" id="set-ai-key" placeholder="gsk_..." autocomplete="off">
+      </div>
+    </div>
+    <p id="settings-msg" style="color:var(--ok);font-size:12px;min-height:18px;margin-top:8px"></p>
+    <div class="modal-actions" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <button class="btn btn-danger btn-sm" onclick="reconnectSupabase()" title="Change Supabase connection">🔌 Change database</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-secondary" onclick="closeModal('settings-modal');openAccountsModal()">👥 Manage Accounts</button>
+        <button class="btn btn-secondary" onclick="closeModal('settings-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveSettings()">Save passwords</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT ADMIN MODAL -->
+<div class="modal-bg" id="contact-admin-modal">
+  <div class="modal" style="max-width:400px">
+    <h2>📞 Contact Admin</h2>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Reach out to the administrator for help or issues.</p>
+    <div id="contact-admin-body" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeModal('contact-admin-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACCOUNTS MODAL (superuser only) -->
+<div class="modal-bg" id="accounts-modal">
+  <div class="modal" style="max-width:560px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <h2 style="margin:0">Manage Accounts</h2>
+      <button class="btn btn-primary btn-sm" onclick="openCreateAccount()">+ Create Account</button>
+    </div>
+    <div id="accounts-list"></div>
+    <div id="create-account-form" style="display:none;border-top:1px solid var(--border);margin-top:16px;padding-top:16px">
+      <h3 style="margin:0 0 14px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em" id="acct-form-title">New Account</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="acct-username" placeholder="e.g. john.doe">
+        </div>
+        <div class="form-group">
+          <label>Access Type</label>
+          <select id="acct-role">
+            <option value="user">User</option>
+            <option value="viewer">Viewer</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="acct-password" placeholder="Set password">
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" id="acct-password2" placeholder="Repeat password">
+        </div>
+      </div>
+      <p id="acct-error" style="color:var(--danger);font-size:12px;min-height:16px;margin:8px 0 0"></p>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button class="btn btn-secondary btn-sm" onclick="closeCreateAccount()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="saveAccount()">Save Account</button>
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn btn-secondary" onclick="closeModal('accounts-modal')">Close</button>
+    </div>
+  </div>
+</div>
 
 <!-- IMPORT INPUT -->
 <input type="file" id="file-import" accept=".json" style="display:none" onchange="handleImport(event)">
 
 <script>
+
 // ─── DATA STORE ────────────────────────────────────────────────────────────────
 let db = { items: [], logs: [], reorders: [], accounts: [] };
 let currentUser = null; // { username, role }
@@ -847,11 +1025,14 @@ function uid() { return Date.now().toString(36) + Math.random().toString(36).sli
 
 // ─── TABS ───────────────────────────────────────────────────────────────────────
 function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t, i) => {
-    t.classList.toggle('active', ['inventory','usage','reorder','report'][i] === name);
+  document.querySelectorAll('.nav-item[data-tab]').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === name);
   });
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
+  var titles = { inventory: 'Inventory', usage: 'Usage Log', reorder: 'Reorder', report: 'Cost Report' };
+  var titleEl = document.getElementById('page-title');
+  if (titleEl) titleEl.textContent = (titles[name] || name).toUpperCase();
   if (name === 'inventory') renderInventory();
   if (name === 'usage') renderLogs();
   if (name === 'reorder') renderReorder();
@@ -897,7 +1078,18 @@ function updateSummary() {
   document.getElementById('s-low').textContent = fmtInt(low);
   document.getElementById('s-ok').textContent = fmtInt(ok);
   document.getElementById('s-reorder').textContent = fmtInt(reorders);
-  document.getElementById('s-logs').textContent = fmtInt(db.logs.length);
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0=Sun
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)); // Monday
+  weekStart.setHours(0, 0, 0, 0);
+  const weekExpenses = db.logs
+    .filter(l => (l.type === 'use' || l.type === 'damage') && new Date(l.date) >= weekStart)
+    .reduce((sum, l) => {
+      const item = db.items.find(i => i.id === l.itemId);
+      return sum + (l.qty || 0) * (item?.cost || 0);
+    }, 0);
+  document.getElementById('s-value').textContent = fmtPHP(weekExpenses);
 
 }
 
@@ -926,7 +1118,7 @@ function renderInventory() {
   if (items.length === 0) { empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
 
-  items.forEach(item => {
+  items.forEach((item, i) => {
     const status = stockStatus(item);
     const max = Math.max(item.qty, item.minQty * 2, 1);
     const pct = Math.min(100, Math.round((item.qty / max) * 100));
@@ -944,14 +1136,14 @@ function renderInventory() {
     if (currentRole === 'superuser') actionsHtml += '<button class="btn btn-icon btn-sm btn-danger" title="Delete" onclick="event.stopPropagation();deleteItem(\'' + item.id + '\')">🗑</button>';
     actionsHtml += '</div>';
     tr.innerHTML = `
-      <td style="color:var(--muted);font-size:12px;text-align:center">${item.seq||''}</td>
+      <td style="color:var(--muted);font-size:12px;text-align:center">${i+1}</td>
       <td><strong>${esc(item.name)}</strong></td>
       <td style="color:var(--muted);font-size:12px">${item.sku ? esc(item.sku) : '—'}</td>
       <td>${item.category ? '<span class="badge badge-info">'+esc(item.category)+'</span>' : '<span style="color:var(--muted)">—</span>'}</td>
       <td style="font-weight:700;font-size:1.05rem">${fmtInt(item.qty)} <span style="color:var(--muted);font-size:12px">${esc(item.unit||'')}</span></td>
       <td>
         <div class="stock-bar-wrap">
-          <div class="stock-bar"><div class="stock-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+          <div class="stock-bar"><div class="stock-bar-fill" style="width:${pct === 0 ? 4 : pct}%;background:${barColor}"></div></div>
           <span style="font-size:11px;color:var(--muted)">${pct}%</span>
         </div>
       </td>
@@ -1198,7 +1390,7 @@ function openLogModal() {
   populateItemSelects();
   document.getElementById('lf-item').value = '';
 
-  document.getElementById('lf-type').value = 'use';
+  document.getElementById('lf-type').value = '';
   updateLogFormLabels();
   document.getElementById('lf-qty').value = '';
   document.getElementById('lf-by').value = '';
@@ -1230,6 +1422,7 @@ function saveLog() {
   const type = document.getElementById('lf-type').value;
   const qty = parseFloat(document.getElementById('lf-qty').value);
   if (!itemId) { alert('Select an item.'); return; }
+  if (!type) { alert('Select a transaction type.'); return; }
   if (isNaN(qty) || qty <= 0) { alert('Enter a valid quantity.'); return; }
   const item = db.items.find(i => i.id === itemId);
   if (!item) return;
@@ -1464,7 +1657,7 @@ function setAdjMode(mode) {
     physGrp.style.display = 'block';
     varGrp.style.display = 'none';
     btnPhys.style.background = 'var(--accent)';
-    btnPhys.style.color = '#060A06';
+    btnPhys.style.color = '#ffffff';
     btnVar.style.background = 'transparent';
     btnVar.style.color = 'var(--muted)';
     // Reset
@@ -1473,7 +1666,7 @@ function setAdjMode(mode) {
     physGrp.style.display = 'none';
     varGrp.style.display = 'block';
     btnVar.style.background = 'var(--accent)';
-    btnVar.style.color = '#060A06';
+    btnVar.style.color = '#ffffff';
     btnPhys.style.background = 'transparent';
     btnPhys.style.color = 'var(--muted)';
     document.getElementById('adj-variance-input').value = '';
@@ -1658,7 +1851,7 @@ function filterItemDropdown() {
       const dot = status==='danger'?'var(--danger)':status==='warn'?'var(--warn)':'var(--ok)';
       return `<div data-id="${i.id}" data-name="${esc(i.name)}" onclick="selectLogItem('${i.id}','${esc(i.name).replace(/'/g,"\\'")}') "
         style="padding:9px 14px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)"
-        onmouseover="this.style.background='var(--surface-alt,#1a221a)'" onmouseout="this.style.background=''">
+        onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
         <span style="width:7px;height:7px;border-radius:50%;background:${dot};flex-shrink:0"></span>
         <span style="flex:1">${esc(i.name)}</span>
         <span style="color:var(--muted);font-size:11px">${fmtInt(i.qty)} ${esc(i.unit||'')}</span>
@@ -2052,8 +2245,10 @@ function exportVarianceCSV() {
   a.click();
 }
 
+
 // ─── SEED DATA ───────────────────────────────────────────────────────────────────
 const SEED_ITEMS = [{"id":"seed0001","name":"Extra Small Box (No Logo) 22.5x140x100mm - Kiehl's","category":"Packaging","location":"","qty":26101,"unit":"piece","minQty":0,"reorderQty":0,"cost":5.5,"supplier":"Locad","sku":"LCDBX001","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":1},{"id":"seed0002","name":"Extra Small Box (No Logo) 24.9x13.8x8.4cm","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":10000,"reorderQty":0,"cost":5.5,"supplier":"Locad","sku":"LCDBX001","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":2},{"id":"seed0003","name":"Small Box (No Logo) 300x244x160mm","category":"Packaging","location":"","qty":11807,"unit":"piece","minQty":10000,"reorderQty":0,"cost":11.5,"supplier":"Locad","sku":"LCDBX002","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":3},{"id":"seed0004","name":"Medium Box (No Logo) 361x270x178mm","category":"Packaging","location":"","qty":20907,"unit":"piece","minQty":10000,"reorderQty":0,"cost":15.25,"supplier":"Locad","sku":"LCDBX003","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":4},{"id":"seed0005","name":"Box (No Logo) 456x296x232mm","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":10000,"reorderQty":0,"cost":0,"supplier":"Locad","sku":"LCDBX004","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":5},{"id":"seed0006","name":"Large Box (No Logo) 460x361x320mm","category":"Packaging","location":"","qty":5950,"unit":"piece","minQty":8000,"reorderQty":0,"cost":24.0,"supplier":"Locad","sku":"LCDBX005","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":6},{"id":"seed0007","name":"XLarge Box (No Logo)","category":"Packaging","location":"","qty":23152,"unit":"piece","minQty":8000,"reorderQty":0,"cost":27.9,"supplier":"Locad","sku":"LCDBX006","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":7},{"id":"seed0008","name":"XXLarge Box (No Logo)","category":"Packaging","location":"","qty":16250,"unit":"piece","minQty":8000,"reorderQty":0,"cost":39.9,"supplier":"Locad","sku":"LCDBX007","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":8},{"id":"seed0009","name":"Small Pouch (Black)","category":"Packaging","location":"","qty":520790,"unit":"piece","minQty":100000,"reorderQty":0,"cost":0,"supplier":"Locad","sku":"LCDPC001","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":9},{"id":"seed0010","name":"Medium Pouch (Black)","category":"Packaging","location":"","qty":173400,"unit":"piece","minQty":100000,"reorderQty":0,"cost":0,"supplier":"Locad","sku":"LCDPC002","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":10},{"id":"seed0011","name":"Large Pouch (Black)","category":"Packaging","location":"","qty":124500,"unit":"piece","minQty":80000,"reorderQty":0,"cost":0,"supplier":"Locad","sku":"LCDPC003","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":11},{"id":"seed0012","name":"XLarge Pouch (Black)","category":"Packaging","location":"","qty":57600,"unit":"piece","minQty":80000,"reorderQty":0,"cost":0,"supplier":"Locad","sku":"LCDPC004","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":12},{"id":"seed0013","name":"Corrugated Sheet","category":"Packaging","location":"","qty":2,"unit":"roll","minQty":0,"reorderQty":0,"cost":0,"supplier":"Locad","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":13},{"id":"seed0014","name":"Bin Box 495x1888mm","category":"Packaging","location":"","qty":4494,"unit":"","minQty":0,"reorderQty":0,"cost":0,"supplier":"Locad","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":14},{"id":"seed0015","name":"Edamama - Extra Small NEW Box w/ logo","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":2000,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":15},{"id":"seed0016","name":"Edamama - Small NEW Box w/ logo","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":5000,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":16},{"id":"seed0017","name":"Edamama - Medium NEW Box w/ logo","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":5000,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":17},{"id":"seed0018","name":"Edamama - Large NEW Box w/ logo","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":3500,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":18},{"id":"seed0019","name":"Edamama - Extra Large NEW Box w/ logo","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":2000,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":19},{"id":"seed0020","name":"Edamama - Small Pouch","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":100000,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":20},{"id":"seed0021","name":"Edamama - Medium Pouch","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":100000,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":21},{"id":"seed0022","name":"Edamama - Large Pouch","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":100000,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":22},{"id":"seed0023","name":"Edamama - Gift Wrap Green","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":50,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":23},{"id":"seed0024","name":"Edamama - Gift Card","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":3000,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":24},{"id":"seed0025","name":"Edamama - Eco Bag White","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":0,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":25},{"id":"seed0026","name":"Edamama - Ribbon Green","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":0,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":26},{"id":"seed0027","name":"Edamama - Ribbon Silver (Gift Wrap Station)","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":90,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":27},{"id":"seed0028","name":"Edamama - Bubble Wrap","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":100,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":28},{"id":"seed0029","name":"Edamama - AHMC","category":"Packaging","location":"","qty":0,"unit":"","minQty":0,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":29},{"id":"seed0030","name":"Edamama - TMC","category":"Packaging","location":"","qty":0,"unit":"","minQty":0,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":30},{"id":"seed0031","name":"Edamama - Giftwrap Pink","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":0,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":31},{"id":"seed0032","name":"Edamama - Flowonder Warranty Card","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":1000,"reorderQty":0,"cost":0,"supplier":"Edamama","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":32},{"id":"seed0033","name":"Emma Sleep - Ribbon White","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":200,"reorderQty":0,"cost":0,"supplier":"Emma Sleep","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":33},{"id":"seed0034","name":"Emma Sleep - Ribbon Orange Big","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":200,"reorderQty":0,"cost":0,"supplier":"Emma Sleep","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":34},{"id":"seed0035","name":"Emma Sleep - Ribbon Orange Small","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":200,"reorderQty":0,"cost":0,"supplier":"Emma Sleep","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":35},{"id":"seed0036","name":"Emma Sleep - NEW Box w/ logo 28x28x97cm","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":10,"reorderQty":0,"cost":0,"supplier":"Emma Sleep","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":36},{"id":"seed0037","name":"Emma Sleep - NEW Box w/ logo 38x38x102cm","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":5,"reorderQty":0,"cost":0,"supplier":"Emma Sleep","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":37},{"id":"seed0038","name":"Emma Sleep - NEW Box w/ logo 39x39x114cm","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":25,"reorderQty":0,"cost":0,"supplier":"Emma Sleep","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":38},{"id":"seed0039","name":"Emma Sleep - Invoice plastic","category":"Packaging","location":"","qty":0,"unit":"box","minQty":0,"reorderQty":0,"cost":0,"supplier":"Emma Sleep","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":39},{"id":"seed0040","name":"Emma Sleep - Yarn","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":0,"reorderQty":0,"cost":0,"supplier":"Emma Sleep","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":40},{"id":"seed0041","name":"Emma Sleep - Card Orange","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":0,"reorderQty":0,"cost":0,"supplier":"Emma Sleep","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":41},{"id":"seed0042","name":"Emma Sleep - Card Violet","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":0,"reorderQty":0,"cost":0,"supplier":"Emma Sleep","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":42},{"id":"seed0043","name":"Emma Sleep - Card White","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":0,"reorderQty":0,"cost":0,"supplier":"Emma Sleep","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":43},{"id":"seed0044","name":"Emma Sleep - Card Violet Christmas Parol","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":0,"reorderQty":0,"cost":0,"supplier":"Emma Sleep","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":44},{"id":"seed0045","name":"Kiehls - Brand Box","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":1000,"reorderQty":0,"cost":0,"supplier":"Kiehls","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":45},{"id":"seed0046","name":"Kiehls - Brown Kraft 50cm","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":0,"reorderQty":0,"cost":0,"supplier":"Kiehls","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":46},{"id":"seed0047","name":"Kiehls - Brown Kraft 30cm","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":0,"reorderQty":0,"cost":0,"supplier":"Kiehls","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":47},{"id":"seed0048","name":"Kiehls - White Kraft - Rollform","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":50,"reorderQty":0,"cost":0,"supplier":"Kiehls","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":48},{"id":"seed0049","name":"Lancome - Brand Box","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":1000,"reorderQty":0,"cost":0,"supplier":"Lancome","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":49},{"id":"seed0050","name":"Lancome - Sticker","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":25,"reorderQty":0,"cost":0,"supplier":"Lancome","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":50},{"id":"seed0051","name":"Lancome - Silk Paper","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":50,"reorderQty":0,"cost":0,"supplier":"Lancome","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":51},{"id":"seed0052","name":"Lancome - Paper Fillers","category":"Packaging","location":"","qty":0,"unit":"kg","minQty":50,"reorderQty":0,"cost":0,"supplier":"Lancome","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":52},{"id":"seed0053","name":"Lancome - Ribbon White","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":10,"reorderQty":0,"cost":0,"supplier":"Lancome","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":53},{"id":"seed0054","name":"Lancome - Ribbon","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":1000,"reorderQty":0,"cost":0,"supplier":"Lancome","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":54},{"id":"seed0055","name":"Nuprene - Clamshell NEW Box w/ logo (BXA)","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":4000,"reorderQty":0,"cost":0,"supplier":"Nuprene","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":55},{"id":"seed0056","name":"Nuprene - Raya NEW Box w/ logo (BXC)","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":10000,"reorderQty":0,"cost":0,"supplier":"Nuprene","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":56},{"id":"seed0057","name":"Nuprene - Gia NEW Box w/ logo (BXB)","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":4000,"reorderQty":0,"cost":0,"supplier":"Nuprene","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":57},{"id":"seed0058","name":"Nuprene - Extra Large NEW Box w/ logo","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":160,"reorderQty":0,"cost":0,"supplier":"Nuprene","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":58},{"id":"seed0059","name":"Nuprene - Tag","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":1000,"reorderQty":0,"cost":0,"supplier":"Nuprene","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":59},{"id":"seed0060","name":"Nuprene - Thank You Card","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":1000,"reorderQty":0,"cost":0,"supplier":"Nuprene","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":60},{"id":"seed0061","name":"GRWM - Air Column - Small","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":0,"reorderQty":0,"cost":0,"supplier":"GRWM","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":61},{"id":"seed0062","name":"GRWM - Air Column - Big","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":20,"reorderQty":0,"cost":0,"supplier":"GRWM","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":62},{"id":"seed0063","name":"ECOFLO - Brand Box","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":20,"reorderQty":0,"cost":0,"supplier":"ECOFLO","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":63},{"id":"seed0064","name":"Mood Food - Mood Food Box 001 - Extra Small","category":"Packaging","location":"","qty":0,"unit":"bundle","minQty":0,"reorderQty":0,"cost":0,"supplier":"Mood Food","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":64},{"id":"seed0065","name":"Mood Food - Mood Food Box 002 - Small","category":"Packaging","location":"","qty":0,"unit":"bundle","minQty":0,"reorderQty":0,"cost":0,"supplier":"Mood Food","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":65},{"id":"seed0066","name":"Mood Food - Mood Food Box 003 - Medium","category":"Packaging","location":"","qty":0,"unit":"bundle","minQty":0,"reorderQty":0,"cost":0,"supplier":"Mood Food","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":66},{"id":"seed0067","name":"Mood Food - Mood Food Box 004 - Large","category":"Packaging","location":"","qty":0,"unit":"bundle","minQty":0,"reorderQty":0,"cost":0,"supplier":"Mood Food","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":67},{"id":"seed0068","name":"NEUMI - Brand Box","category":"Packaging","location":"","qty":0,"unit":"piece","minQty":0,"reorderQty":0,"cost":0,"supplier":"NEUMI","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":68},{"id":"seed0069","name":"12 feet PVC Pipe 1/2\" diameter","category":"Operational","location":"","qty":0,"unit":"pc","minQty":50,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":69},{"id":"seed0070","name":"2D Handheld Barcode Scanner","category":"Operational","location":"","qty":0,"unit":"unit","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":70},{"id":"seed0071","name":"A4 Clearbook","category":"Operational","location":"","qty":0,"unit":"pc","minQty":3,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":71},{"id":"seed0072","name":"A4 Newsprint","category":"Operational","location":"","qty":0,"unit":"ream","minQty":4,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":72},{"id":"seed0073","name":"A4 Hardcopy","category":"Operational","location":"","qty":79,"unit":"ream","minQty":4,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":73},{"id":"seed0074","name":"Albatross","category":"Cleaning","location":"","qty":10,"unit":"pc","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":74},{"id":"seed0075","name":"AWB RIBBON 56MMX300MM","category":"Operational","location":"","qty":0,"unit":"roll","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":75},{"id":"seed0076","name":"AWB RIBBON 70MMx300MM","category":"Operational","location":"","qty":0,"unit":"roll","minQty":13,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":76},{"id":"seed0077","name":"AWB RIBBON 60MMX300MM","category":"Operational","location":"","qty":205,"unit":"roll","minQty":373,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":77},{"id":"seed0078","name":"AWB RIBBON 4X6","category":"Operational","location":"","qty":632,"unit":"roll","minQty":240,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":78},{"id":"seed0079","name":"AWB Sticker 2x6\"","category":"Packaging","location":"","qty":20,"unit":"roll","minQty":36,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":79},{"id":"seed0080","name":"AWB Sticker 4X6","category":"Operational","location":"","qty":2311,"unit":"roll","minQty":2300,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":80},{"id":"seed0081","name":"Ballpen - black","category":"Operational","location":"","qty":7,"unit":"pc","minQty":36,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":81},{"id":"seed0082","name":"Ballpen - blue","category":"Operational","location":"","qty":0,"unit":"pc","minQty":24,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":82},{"id":"seed0083","name":"Barcode Sticker 2x3\"","category":"Operational","location":"","qty":84,"unit":"roll","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":83},{"id":"seed0084","name":"Barcode Sticker 2x1\"","category":"Operational","location":"","qty":28,"unit":"roll","minQty":36,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":84},{"id":"seed0085","name":"Barcode Sticker 2x6","category":"Operational","location":"","qty":0,"unit":"roll","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":85},{"id":"seed0086","name":"Battery AAA","category":"Cleaning","location":"","qty":0,"unit":"pack","minQty":30,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":86},{"id":"seed0087","name":"Blade Cutter Refill","category":"Operational","location":"","qty":0,"unit":"pc","minQty":40,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":87},{"id":"seed0088","name":"Broom","category":"Cleaning","location":"","qty":0,"unit":"pc","minQty":3,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":88},{"id":"seed0089","name":"Broomstick with Handle","category":"Cleaning","location":"","qty":0,"unit":"pc","minQty":3,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":89},{"id":"seed0090","name":"Brother DRUM","category":"Operational","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":90},{"id":"seed0091","name":"Brother Ink (Black) TN-2380","category":"Operational","location":"","qty":0,"unit":"cartridge","minQty":13,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":91},{"id":"seed0092","name":"Bubble Wrap 13\"","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":3000,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":92},{"id":"seed0093","name":"Bubble Wrap 20\"","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":3150,"reorderQty":0,"cost":268.8,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":93},{"id":"seed0094","name":"Bubble Wrap 40\"","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":100,"reorderQty":0,"cost":537.6,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":94},{"id":"seed0095","name":"Cable Tie 16\" - white SMALL","category":"Operational","location":"","qty":0,"unit":"pouch","minQty":5,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":95},{"id":"seed0096","name":"Cable Tie - Big BLACK","category":"Operational","location":"","qty":0,"unit":"pcs","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":96},{"id":"seed0097","name":"CCTV Camera","category":"Operational","location":"","qty":0,"unit":"unit","minQty":5,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":97},{"id":"seed0098","name":"Clear Tape 2\"","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":3500,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":98},{"id":"seed0099","name":"Combination Spanner 8-17mm","category":"Equipment","location":"","qty":0,"unit":"set","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":99},{"id":"seed0100","name":"Computer Mouse","category":"Operational","location":"","qty":0,"unit":"pc","minQty":5,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":100},{"id":"seed0101","name":"Cutter","category":"Operational","location":"","qty":0,"unit":"unit","minQty":50,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":101},{"id":"seed0102","name":"Dot Knitted Gloves (HGVK05)","category":"Operational","location":"","qty":0,"unit":"pair","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":102},{"id":"seed0103","name":"Double Sided Tape 1\"","category":"Operational","location":"","qty":0,"unit":"roll","minQty":480,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":103},{"id":"seed0104","name":"Double Sided Tape Foam","category":"Operational","location":"","qty":0,"unit":"roll","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":104},{"id":"seed0105","name":"Dual Slot SD Card Reader","category":"Operational","location":"","qty":0,"unit":"unit","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":105},{"id":"seed0106","name":"Dustpan","category":"Cleaning","location":"","qty":0,"unit":"pc","minQty":2,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":106},{"id":"seed0107","name":"Ethyl Alcohol","category":"Cleaning","location":"","qty":0,"unit":"gallon","minQty":5,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":107},{"id":"seed0108","name":"Extension Wire with Socket 6 gang","category":"Operational","location":"","qty":0,"unit":"pc","minQty":5,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":108},{"id":"seed0109","name":"Extension Wire with Socket 3 gang","category":"Operational","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":109},{"id":"seed0110","name":"Fabric Conditioner","category":"Cleaning","location":"","qty":0,"unit":"gallon","minQty":5,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":110},{"id":"seed0111","name":"Fragile Sticker","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":300,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":111},{"id":"seed0112","name":"Fragile Tape","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":2100,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":112},{"id":"seed0113","name":"Glass Cleaner","category":"Cleaning","location":"","qty":0,"unit":"gallon","minQty":5,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":113},{"id":"seed0114","name":"GT53 HP INK BLACK","category":"Operational","location":"","qty":0,"unit":"bottle","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":114},{"id":"seed0115","name":"GT52 HP INK CYAN","category":"Operational","location":"","qty":0,"unit":"bottle","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":115},{"id":"seed0116","name":"GT52 HP INK YELLOW","category":"Operational","location":"","qty":0,"unit":"bottle","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":116},{"id":"seed0117","name":"GT52 HP INK MAGENTA","category":"Operational","location":"","qty":0,"unit":"bottle","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":117},{"id":"seed0118","name":"Hand Liquid Soap","category":"Cleaning","location":"","qty":0,"unit":"gallon","minQty":5,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":118},{"id":"seed0119","name":"HDMI Cord","category":"Operational","location":"","qty":0,"unit":"pc","minQty":5,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":119},{"id":"seed0120","name":"Ingco 12pcs Socket Wrench Set 1/2\" Drive (HKTS12122)","category":"Equipment","location":"","qty":0,"unit":"set","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":120},{"id":"seed0121","name":"Kyocera Toner (TK-5445C)","category":"Operational","location":"","qty":0,"unit":"cartridge","minQty":2,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":121},{"id":"seed0122","name":"Kyocera Toner (TK-5445K)","category":"Operational","location":"","qty":0,"unit":"cartridge","minQty":15,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":122},{"id":"seed0123","name":"Kyocera Toner (TK-5445M)","category":"Operational","location":"","qty":0,"unit":"cartridge","minQty":2,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":123},{"id":"seed0124","name":"Kyocera Toner (TK-5445Y)","category":"Operational","location":"","qty":0,"unit":"cartridge","minQty":2,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":124},{"id":"seed0125","name":"Laminating Film","category":"Operational","location":"","qty":0,"unit":"ream","minQty":5,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":125},{"id":"seed0126","name":"Laminating Machine","category":"Equipment","location":"","qty":0,"unit":"unit","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":126},{"id":"seed0127","name":"Long Folder - white","category":"Operational","location":"","qty":0,"unit":"pc","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":127},{"id":"seed0128","name":"Long Envelope - Brown","category":"Operational","location":"","qty":0,"unit":"pc","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":128},{"id":"seed0129","name":"Marker Ink - black","category":"Operational","location":"","qty":0,"unit":"pc","minQty":24,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":129},{"id":"seed0130","name":"Marker Ink - blue","category":"Operational","location":"","qty":0,"unit":"pc","minQty":12,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":130},{"id":"seed0131","name":"Mask - black","category":"Operational","location":"","qty":0,"unit":"box","minQty":2,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":131},{"id":"seed0132","name":"Max Staple Wire #35","category":"Operational","location":"","qty":0,"unit":"box","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":132},{"id":"seed0133","name":"Mini Hacksaw Blade","category":"Equipment","location":"","qty":0,"unit":"set","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":133},{"id":"seed0134","name":"Mop","category":"Cleaning","location":"","qty":0,"unit":"pc","minQty":3,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":134},{"id":"seed0135","name":"Pail / Bucket","category":"Cleaning","location":"","qty":0,"unit":"pc","minQty":2,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":135},{"id":"seed0136","name":"Paint Brush 1\"","category":"Equipment","location":"","qty":0,"unit":"pc","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":136},{"id":"seed0137","name":"Paint Brush 2\"","category":"Equipment","location":"","qty":0,"unit":"pc","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":137},{"id":"seed0138","name":"Plastic Gloves - blue","category":"Operational","location":"","qty":0,"unit":"box","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":138},{"id":"seed0139","name":"Plastic Tool Box 17\"","category":"Equipment","location":"","qty":0,"unit":"pc","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":139},{"id":"seed0140","name":"Platform Push Cart Heavy Duty 300kgs","category":"Equipment","location":"","qty":0,"unit":"pc","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":140},{"id":"seed0141","name":"Platform Push Cart Heavy Duty 400kgs","category":"Equipment","location":"","qty":0,"unit":"pc","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":141},{"id":"seed0142","name":"Powder Detergent","category":"Cleaning","location":"","qty":0,"unit":"kg","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":142},{"id":"seed0143","name":"Printer (Brother)","category":"Equipment","location":"","qty":0,"unit":"unit","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":143},{"id":"seed0144","name":"Safety Reflector Vest (green)","category":"Operational","location":"","qty":0,"unit":"pc","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":144},{"id":"seed0145","name":"Scissors","category":"Operational","location":"","qty":0,"unit":"pc","minQty":24,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":145},{"id":"seed0146","name":"Screwdriver Starheads","category":"Equipment","location":"","qty":0,"unit":"pc","minQty":2,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":146},{"id":"seed0147","name":"SD Card Memory","category":"Operational","location":"","qty":0,"unit":"pc","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":147},{"id":"seed0148","name":"SD Card Memory Reader","category":"Operational","location":"","qty":0,"unit":"pc","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":148},{"id":"seed0149","name":"Snap Off Blade Cutter Small","category":"Operational","location":"","qty":0,"unit":"pc","minQty":50,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":149},{"id":"seed0150","name":"Sticky Note 7.6x10.2cm","category":"Operational","location":"","qty":0,"unit":"pad","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":150},{"id":"seed0151","name":"Stretch Film - black 3.2kg x 20\"","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":150,"reorderQty":0,"cost":415.0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":151},{"id":"seed0152","name":"Stretch Film - clear 3.2kg x 20\"","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":300,"reorderQty":0,"cost":295.0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":152},{"id":"seed0153","name":"Tape Dispenser 1\"","category":"Operational","location":"","qty":0,"unit":"pc","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":153},{"id":"seed0154","name":"Tape Dispenser 2\"","category":"Operational","location":"","qty":0,"unit":"pc","minQty":50,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":154},{"id":"seed0155","name":"Toilet Brush","category":"Cleaning","location":"","qty":0,"unit":"pc","minQty":2,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":155},{"id":"seed0156","name":"Toilet Paper","category":"Cleaning","location":"","qty":0,"unit":"roll","minQty":48,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":156},{"id":"seed0157","name":"TP-Link Dongle 300mbps","category":"Operational","location":"","qty":0,"unit":"pc","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":157},{"id":"seed0158","name":"Trash Bag Large","category":"Cleaning","location":"","qty":0,"unit":"bundle","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":158},{"id":"seed0159","name":"Trash Bag Medium","category":"Cleaning","location":"","qty":0,"unit":"bundle","minQty":10,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":159},{"id":"seed0160","name":"Universal Socket Adapter 3pin","category":"Operational","location":"","qty":0,"unit":"pc","minQty":5,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":160},{"id":"seed0161","name":"Utility Box 20\"","category":"Operational","location":"","qty":0,"unit":"pc","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":161},{"id":"seed0162","name":"Weighing Scale 100kg capacity","category":"Equipment","location":"","qty":0,"unit":"unit","minQty":1,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":162},{"id":"seed0163","name":"Zonrox","category":"Cleaning","location":"","qty":0,"unit":"gallon","minQty":5,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":163},{"id":"seed0164","name":"Eco Tape","category":"Packaging","location":"","qty":0,"unit":"roll","minQty":300,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":164},{"id":"seed0165","name":"Rags","category":"Cleaning","location":"","qty":0,"unit":"pcs","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":165},{"id":"seed0166","name":"HDMI Cord Adapter","category":"Operational","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":166},{"id":"seed0167","name":"Foam Dish Washing","category":"Cleaning","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":167},{"id":"seed0168","name":"Spray Bottle","category":"Cleaning","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":168},{"id":"seed0169","name":"Thermal Tape White 2 Inch","category":"Packaging","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":169},{"id":"seed0170","name":"Thermal Tape Yellow 2 Inch","category":"Packaging","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":170},{"id":"seed0171","name":"Mouse Pad","category":"Operational","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":171},{"id":"seed0172","name":"Rubberbond","category":"Operational","location":"","qty":0,"unit":"bundle","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":172},{"id":"seed0173","name":"Stapler","category":"Operational","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":173},{"id":"seed0174","name":"Glass Board Marker","category":"Operational","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":174},{"id":"seed0175","name":"Scanner","category":"Operational","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":175},{"id":"seed0176","name":"First Aid Kit","category":"Operational","location":"","qty":0,"unit":"box","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":176},{"id":"seed0177","name":"Lutos Blue Chalk","category":"Operational","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":177},{"id":"seed0178","name":"Paper Board","category":"Operational","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":178},{"id":"seed0179","name":"Measuring Tape","category":"Equipment","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":179},{"id":"seed0180","name":"Electric Tape","category":"Operational","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":180},{"id":"seed0181","name":"White Board Eraser","category":"Operational","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":181},{"id":"seed0182","name":"Coated Clips #33","category":"Operational","location":"","qty":0,"unit":"box","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":182},{"id":"seed0183","name":"Portable USB","category":"Operational","location":"","qty":0,"unit":"pc","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":183},{"id":"seed0184","name":"Printer Accessories Scanpak","category":"Operational","location":"","qty":0,"unit":"box","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":184},{"id":"seed0185","name":"EPSON LQ590 Ribbon","category":"Operational","location":"","qty":0,"unit":"cartridge","minQty":0,"reorderQty":0,"cost":0,"supplier":"","sku":"","notes":"","createdAt":"2026-06-09T00:00:00.000Z","updatedAt":"2026-06-09T00:00:00.000Z","seq":185}];
+
 
 // ─── AUTH & ROLES ────────────────────────────────────────────────────────────────
 let currentRole = null;
@@ -2086,7 +2281,7 @@ function renderRecentLogins() {
       + '<button onclick="selectRecentLogin(\'' + safe + '\')" '
       + 'style="display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;transition:border-color .15s;min-width:64px" '
       + 'onmouseover="this.style.borderColor=\'var(--accent)\'" onmouseout="this.style.borderColor=\'var(--border)\'">'
-      + '<div style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#060A06">' + initials + '</div>'
+      + '<div style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#ffffff">' + initials + '</div>'
       + '<span style="font-size:11px;color:var(--text);max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + u + '</span>'
       + '</button>'
       + '<button class="rl-x" onclick="removeRecentLogin(\'' + safe + '\')" title="Remove" '
@@ -2199,26 +2394,20 @@ function logout() {
 
 
 function applyRoleUI() {
-  // Role badge
   var labels = { superuser: 'Superuser', user: 'User', viewer: 'Viewer' };
-  var colors = { superuser: 'var(--accent)', user: '#93c5fd', viewer: 'var(--muted)' };
   var badge = document.getElementById('role-badge');
   var uname = currentUser ? currentUser.username : '';
-  badge.textContent = uname ? uname + ' (' + (labels[currentRole] || currentRole) + ')' : (labels[currentRole] || currentRole);
-  badge.style.color = colors[currentRole] || 'var(--muted)';
-  badge.style.background = currentRole === 'superuser' ? 'rgba(77,255,110,0.12)' : currentRole === 'user' ? 'rgba(147,197,253,0.12)' : 'rgba(255,255,255,0.06)';
+  badge.textContent = uname ? uname + ' · ' + (labels[currentRole] || currentRole) : (labels[currentRole] || currentRole);
 
-  // Header buttons
-  show('btn-add-item',    can('add_item') || currentRole === 'superuser');
-  show('btn-reset',        currentRole === 'superuser');
-  show('btn-settings',     currentRole === 'superuser');
-  show('btn-change-pass',  !!currentRole);
+  show('btn-add-item',      can('add_item') || currentRole === 'superuser');
+  show('btn-reset',         currentRole === 'superuser');
+  show('btn-settings',      currentRole === 'superuser');
+  show('btn-change-pass',   !!currentRole);
   show('btn-contact-admin', currentRole === 'user' || currentRole === 'viewer');
   var fab = document.getElementById('ai-fab');
   if (fab) { fab.style.display = currentRole ? 'flex' : 'none'; }
-  // Dynamic tab buttons (may not exist yet, renderX will handle them)
-  show('btn-log-usage',       can('log'));
-  show('btn-create-reorder',  can('reorder'));
+  show('btn-log-usage',      can('log'));
+  show('btn-create-reorder', can('reorder'));
 }
 
 function show(id, visible) {
@@ -2530,18 +2719,19 @@ initReportDates();
 
 document.addEventListener('DOMContentLoaded', function() { load(); });
 // Firebase setup or login is triggered by load()
+
 </script>
 
 <!-- SUPABASE SETUP OVERLAY -->
-<div id="supa-setup-overlay" style="position:fixed;inset:0;background:#060A06;z-index:1000;display:none;align-items:center;justify-content:center">
+<div id="supa-setup-overlay" style="position:fixed;inset:0;background:#f4f5f7;z-index:1000;display:none;align-items:center;justify-content:center">
   <div style="width:100%;max-width:520px;padding:24px">
     <div style="text-align:center;margin-bottom:28px">
-      <img src="https://www.golocad.com/images/LOCAD-LOGO-WHITE.svg" alt="Locad" style="height:28px;margin-bottom:10px">
-      <p style="color:var(--text);font-size:1.1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px">SupplyBase</p>
+      <img src="https://www.golocad.com/images/LOCAD-LOGO-BLACK.svg" alt="Locad" style="height:28px;margin-bottom:10px" onerror="this.src='https://www.golocad.com/images/LOCAD-LOGO-WHITE.svg';this.style.filter='invert(1)'">
+      <p style="color:#0f172a;font-size:1.1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px">SupplyBase</p>
       <p style="color:var(--accent);font-size:13px;font-weight:600;margin-bottom:2px">Connect to Supabase</p>
       <p style="color:var(--muted);font-size:12px">Set this up once — all users share the same database.</p>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px">
+    <div style="background:#fff;border:1px solid #e2e4e9;border-radius:12px;padding:24px;box-shadow:0 4px 24px rgba(0,0,0,.06)">
       <div style="font-size:12px;color:var(--muted);line-height:1.9;margin-bottom:18px">
         <b style="color:var(--text)">First-time setup (superuser only):</b><br>
         1. Go to <span style="color:var(--accent);user-select:all">supabase.com</span> → New project (free tier is fine)<br>
@@ -2566,19 +2756,21 @@ document.addEventListener('DOMContentLoaded', function() { load(); });
 </div>
 
 <!-- LOGIN OVERLAY -->
-<div id="login-overlay" style="position:fixed;inset:0;background:radial-gradient(ellipse at 50% 40%, #0d2b10 0%, #060A06 70%);z-index:999;display:none;align-items:center;justify-content:center">
-  <div style="width:100%;max-width:380px;padding:24px">
-    <div style="text-align:center;margin-bottom:28px">
-      <img src="https://www.golocad.com/images/LOCAD-LOGO-WHITE.svg" alt="Locad" style="height:28px;margin-bottom:10px">
-      <p style="color:var(--text);font-size:1.35rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin:0">SupplyBase</p>
+<div id="login-overlay" style="position:fixed;inset:0;background:#f4f5f7;z-index:999;display:none;align-items:center;justify-content:center">
+  <div style="width:100%;max-width:400px;padding:24px">
+    <div style="text-align:center;margin-bottom:32px">
+      <img src="https://www.golocad.com/images/LOCAD-LOGO-BLACK.svg" alt="Locad" style="height:28px;margin-bottom:10px" onerror="this.src='https://www.golocad.com/images/LOCAD-LOGO-WHITE.svg';this.style.filter='invert(1)'">
+      <p style="color:#0f172a;font-size:1.4rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px">SupplyBase</p>
+      <p style="color:#64748b;font-size:13px;margin:0">Warehouse Consumables Tracker</p>
     </div>
+
     <!-- Recent logins -->
     <div id="recent-logins-wrap" style="display:none;margin-bottom:16px">
       <p style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Recent</p>
       <div id="recent-logins-list" style="display:flex;flex-wrap:wrap;gap:8px"></div>
     </div>
 
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px">
+    <div style="background:#fff;border:1px solid #e2e4e9;border-radius:12px;padding:28px;box-shadow:0 4px 24px rgba(0,0,0,.06)">
       <div class="form-group" style="margin-bottom:14px">
         <label>Username</label>
         <input type="text" id="login-username" placeholder="Enter username" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()">
@@ -2593,166 +2785,23 @@ document.addEventListener('DOMContentLoaded', function() { load(); });
   </div>
 </div>
 
-<!-- CHANGE PASSWORD MODAL -->
-<div class="modal-bg" id="change-pass-modal">
-  <div class="modal" style="max-width:360px">
-    <h2>Change Password</h2>
-    <div class="form-grid">
-      <div class="form-group full">
-        <label>Current Password</label>
-        <input type="password" id="cp-current" placeholder="Enter current password">
-      </div>
-      <div class="form-group full">
-        <label>New Password</label>
-        <input type="password" id="cp-new" placeholder="Min 4 characters">
-      </div>
-      <div class="form-group full">
-        <label>Confirm New Password</label>
-        <input type="password" id="cp-confirm" placeholder="Repeat new password">
-      </div>
-    </div>
-    <p id="cp-msg" style="font-size:12px;min-height:18px;margin:4px 0 12px"></p>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal('change-pass-modal')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveChangePassword()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- SETTINGS MODAL (superuser only) -->
-<div class="modal-bg" id="settings-modal">
-  <div class="modal" style="max-width:400px">
-    <h2>Settings</h2>
-    <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Change passwords for each role.</p>
-    <div class="form-grid">
-      <div class="form-group full">
-        <label>Superuser username</label>
-        <input type="text" id="set-admin-username" placeholder="Superuser username" autocomplete="off">
-      </div>
-      <div class="form-group full">
-        <label>Superuser password</label>
-        <input type="password" id="set-admin-pass" placeholder="New password (leave blank to keep)">
-      </div>
-      <div class="form-group full">
-        <label>User password</label>
-        <input type="password" id="set-user-pass" placeholder="New password">
-      </div>
-      <div class="form-group full">
-        <label>Viewer password</label>
-        <input type="password" id="set-viewer-pass" placeholder="New password">
-      </div>
-    </div>
-    <hr style="border:none;border-top:1px solid var(--border);margin:16px 0 12px">
-    <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Contact info shown to users when they need help.</p>
-    <div class="form-grid">
-      <div class="form-group full">
-        <label>Admin name</label>
-        <input type="text" id="set-contact-name" placeholder="e.g. John Santos" autocomplete="off">
-      </div>
-      <div class="form-group full">
-        <label>Email</label>
-        <input type="text" id="set-contact-email" placeholder="e.g. admin@company.com" autocomplete="off">
-      </div>
-      <div class="form-group full">
-        <label>Phone / Viber / WhatsApp</label>
-        <input type="text" id="set-contact-phone" placeholder="e.g. +63 917 123 4567" autocomplete="off">
-      </div>
-      <div class="form-group full">
-        <label>Additional note</label>
-        <input type="text" id="set-contact-note" placeholder="e.g. Available Mon–Fri, 9am–6pm" autocomplete="off">
-      </div>
-    </div>
-    <hr style="border:none;border-top:1px solid var(--border);margin:16px 0 12px">
-    <p style="color:var(--muted);font-size:13px;margin-bottom:12px">🤖 AI Assistant — powered by Groq (free). Get your free API key at <span style="color:var(--accent);user-select:all;cursor:text">console.groq.com</span> → API Keys → Create API Key.</p>
-    <div class="form-grid">
-      <div class="form-group full">
-        <label>Groq API Key</label>
-        <input type="password" id="set-ai-key" placeholder="gsk_..." autocomplete="off">
-      </div>
-    </div>
-    <p id="settings-msg" style="color:var(--ok);font-size:12px;min-height:18px;margin-top:8px"></p>
-    <div class="modal-actions" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
-      <button class="btn btn-danger btn-sm" onclick="reconnectSupabase()" title="Change Supabase connection">🔌 Change database</button>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-secondary" onclick="closeModal('settings-modal');openAccountsModal()">👥 Manage Accounts</button>
-        <button class="btn btn-secondary" onclick="closeModal('settings-modal')">Cancel</button>
-        <button class="btn btn-primary" onclick="saveSettings()">Save passwords</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- CONTACT ADMIN MODAL -->
-<div class="modal-bg" id="contact-admin-modal">
-  <div class="modal" style="max-width:400px">
-    <h2>📞 Contact Admin</h2>
-    <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Reach out to the administrator for help or issues.</p>
-    <div id="contact-admin-body" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px"></div>
-    <div class="modal-actions">
-      <button class="btn btn-primary" onclick="closeModal('contact-admin-modal')">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- ACCOUNTS MODAL (superuser only) -->
-<div class="modal-bg" id="accounts-modal">
-  <div class="modal" style="max-width:560px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-      <h2 style="margin:0">Manage Accounts</h2>
-      <button class="btn btn-primary btn-sm" onclick="openCreateAccount()">+ Create Account</button>
-    </div>
-    <div id="accounts-list"></div>
-    <div id="create-account-form" style="display:none;border-top:1px solid var(--border);margin-top:16px;padding-top:16px">
-      <h3 style="margin:0 0 14px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em" id="acct-form-title">New Account</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Username</label>
-          <input type="text" id="acct-username" placeholder="e.g. john.doe">
-        </div>
-        <div class="form-group">
-          <label>Access Type</label>
-          <select id="acct-role">
-            <option value="user">User</option>
-            <option value="viewer">Viewer</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="acct-password" placeholder="Set password">
-        </div>
-        <div class="form-group">
-          <label>Confirm Password</label>
-          <input type="password" id="acct-password2" placeholder="Repeat password">
-        </div>
-      </div>
-      <p id="acct-error" style="color:var(--danger);font-size:12px;min-height:16px;margin:8px 0 0"></p>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
-        <button class="btn btn-secondary btn-sm" onclick="closeCreateAccount()">Cancel</button>
-        <button class="btn btn-primary btn-sm" onclick="saveAccount()">Save Account</button>
-      </div>
-    </div>
-    <div class="modal-actions" style="margin-top:16px">
-      <button class="btn btn-secondary" onclick="closeModal('accounts-modal')">Close</button>
-    </div>
-  </div>
-</div>
 <!-- AI ASSISTANT PANEL -->
-<div id="ai-fab" onclick="toggleAIPanel()" title="Ask Loki" style="position:fixed;bottom:28px;right:28px;z-index:902;width:52px;height:52px;border-radius:50%;background:var(--accent);color:#060A06;font-size:22px;cursor:pointer;box-shadow:0 4px 18px rgba(77,255,110,0.35);display:none;align-items:center;justify-content:center;font-weight:700;transition:transform .15s" onmouseenter="this.style.transform='scale(1.08)'" onmouseleave="this.style.transform='scale(1)'">✦</div>
+<div id="ai-fab" onclick="toggleAIPanel()" title="Ask Loki" style="position:fixed;bottom:28px;right:28px;z-index:902;width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;font-size:22px;cursor:pointer;box-shadow:0 4px 18px rgba(22,163,74,0.35);display:none;align-items:center;justify-content:center;font-weight:700;transition:transform .15s" onmouseenter="this.style.transform='scale(1.08)'" onmouseleave="this.style.transform='scale(1)'">✦</div>
 
-<div id="ai-panel" style="display:none;position:fixed;bottom:92px;right:28px;z-index:903;width:360px;max-height:520px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.4);flex-direction:column;overflow:hidden">
+<div id="ai-panel" style="display:none;position:fixed;bottom:92px;right:28px;z-index:903;width:360px;max-height:520px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.12);flex-direction:column;overflow:hidden">
   <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2)">
     <div style="display:flex;align-items:center;gap:8px">
       <span style="color:var(--accent);font-size:16px">✦</span>
       <span style="font-weight:600;font-size:14px">Loki</span>
-      <span style="font-size:10px;color:var(--muted);background:rgba(77,255,110,0.1);color:var(--accent);padding:2px 7px;border-radius:99px;font-weight:600">BETA</span>
+      <span style="font-size:10px;color:var(--accent);background:rgba(22,163,74,0.1);padding:2px 7px;border-radius:99px;font-weight:600">BETA</span>
     </div>
     <button onclick="toggleAIPanel()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0;line-height:1">×</button>
   </div>
   <div id="ai-messages" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:200px;max-height:340px"></div>
   <div id="ai-suggestions" style="padding:0 12px 8px;display:flex;gap:6px;flex-wrap:wrap"></div>
   <div style="padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px">
-    <input type="text" id="ai-input" placeholder="Ask about your inventory…" style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px" onkeydown="if(event.key==='Enter')sendAIMessage()">
-    <button onclick="sendAIMessage()" style="background:var(--accent);color:#060A06;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:700;font-size:14px">↑</button>
+    <input type="text" id="ai-input" placeholder="Ask about your inventory…" style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px" onkeydown="if(event.key==='Enter')sendAIMessage()">
+    <button onclick="sendAIMessage()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:700;font-size:14px">↑</button>
   </div>
 </div>
 
@@ -2790,8 +2839,8 @@ function showAIKeyPrompt() {
   var div = document.createElement('div');
   div.style.cssText = 'padding:12px;display:flex;flex-direction:column;gap:10px';
   div.innerHTML = '<div style="font-size:13px;color:var(--text);line-height:1.6">👋 Hi! I\'m <strong>Loki</strong>, your Locad warehouse assistant.<br><br>To activate me, enter your free <strong>Groq API key</strong> below.<br><span style="color:var(--muted);font-size:12px">Get one free at: <span style="color:var(--accent);user-select:all">console.groq.com</span> → API Keys → Create API Key</span></div>'
-    + '<input type="password" id="loki-key-input" placeholder="Paste your Groq key here (gsk_...)" style="padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;width:100%;box-sizing:border-box">'
-    + '<button onclick="saveLokiKey()" style="padding:9px;background:var(--accent);color:#060A06;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px">Activate Loki ✦</button>';
+    + '<input type="password" id="loki-key-input" placeholder="Paste your Groq key here (gsk_...)" style="padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px;width:100%;box-sizing:border-box">'
+    + '<button onclick="saveLokiKey()" style="padding:9px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px">Activate Loki ✦</button>';
   el.appendChild(div);
 }
 
@@ -2821,8 +2870,8 @@ function addAIMessage(role, text) {
   var isUser = role === 'user';
   var div = document.createElement('div');
   div.style.cssText = 'display:flex;gap:8px;align-items:flex-start;' + (isUser ? 'flex-direction:row-reverse' : '');
-  var avatar = '<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:' + (isUser ? 'rgba(147,197,253,0.2);color:#93c5fd' : 'rgba(77,255,110,0.15);color:var(--accent)') + '">' + (isUser ? '👤' : '✦') + '</div>';
-  var bubble = '<div style="max-width:260px;padding:9px 12px;border-radius:' + (isUser ? '12px 4px 12px 12px' : '4px 12px 12px 12px') + ';background:' + (isUser ? 'rgba(147,197,253,0.1);border:1px solid rgba(147,197,253,0.2)' : 'var(--surface2);border:1px solid var(--border)') + ';font-size:13px;line-height:1.5;color:var(--text);white-space:pre-wrap">' + esc(text) + '</div>';
+  var avatar = '<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:' + (isUser ? 'rgba(147,197,253,0.2);color:#1e40af' : 'rgba(22,163,74,0.12);color:var(--accent)') + '">' + (isUser ? '👤' : '✦') + '</div>';
+  var bubble = '<div style="max-width:260px;padding:9px 12px;border-radius:' + (isUser ? '12px 4px 12px 12px' : '4px 12px 12px 12px') + ';background:' + (isUser ? 'rgba(147,197,253,0.1);border:1px solid rgba(147,197,253,0.25)' : 'var(--surface2);border:1px solid var(--border)') + ';font-size:13px;line-height:1.5;color:var(--text);white-space:pre-wrap">' + esc(text) + '</div>';
   div.innerHTML = avatar + bubble;
   el.appendChild(div);
   el.scrollTop = el.scrollHeight;
@@ -2833,7 +2882,7 @@ function addAIThinking() {
   var div = document.createElement('div');
   div.id = 'ai-thinking';
   div.style.cssText = 'display:flex;gap:8px;align-items:flex-start';
-  div.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:rgba(77,255,110,0.15);color:var(--accent)">✦</div>'
+  div.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:rgba(22,163,74,0.12);color:var(--accent)">✦</div>'
     + '<div style="padding:9px 14px;border-radius:4px 12px 12px 12px;background:var(--surface2);border:1px solid var(--border);font-size:13px;color:var(--muted)">Thinking…</div>';
   el.appendChild(div);
   el.scrollTop = el.scrollHeight;
@@ -2918,7 +2967,7 @@ async function sendAIMessage() {
         if (action.type === 'prefill_log') {
           var btn = document.createElement('button');
           btn.textContent = '📝 Open log form for ' + action.itemName;
-          btn.style.cssText = 'margin:4px 12px 8px;padding:7px 12px;background:rgba(77,255,110,0.12);border:1px solid rgba(77,255,110,0.3);color:var(--accent);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;width:calc(100% - 24px);text-align:left';
+          btn.style.cssText = 'margin:4px 12px 8px;padding:7px 12px;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.25);color:var(--accent);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;width:calc(100% - 24px);text-align:left';
           btn.onclick = function() {
             toggleAIPanel();
             var item = db.items.find(function(i) { return i.name.toLowerCase().includes(action.itemName.toLowerCase()); });
