@@ -235,6 +235,7 @@
         <thead>
           <tr>
             <th onclick="sortBy('seq')" title="Master List order"># <span class="sort-arrow active" id="sort-seq">↑</span></th><th onclick="sortBy('name')">Item <span class="sort-arrow" id="sort-name">↕</span></th>
+            <th onclick="sortBy('sku')">SKU <span class="sort-arrow" id="sort-sku">↕</span></th>
             <th onclick="sortBy('category')">Category <span class="sort-arrow" id="sort-category">↕</span></th>
             <th onclick="sortBy('qty')">Stock <span class="sort-arrow" id="sort-qty">↕</span></th>
             <th>Level</th>
@@ -944,7 +945,8 @@ function renderInventory() {
     actionsHtml += '</div>';
     tr.innerHTML = `
       <td style="color:var(--muted);font-size:12px;text-align:center">${item.seq||''}</td>
-      <td><strong>${esc(item.name)}</strong>${item.sku ? '<br><span style="color:var(--muted);font-size:11px">'+esc(item.sku)+'</span>' : ''}</td>
+      <td><strong>${esc(item.name)}</strong></td>
+      <td style="color:var(--muted);font-size:12px">${item.sku ? esc(item.sku) : '—'}</td>
       <td>${item.category ? '<span class="badge badge-info">'+esc(item.category)+'</span>' : '<span style="color:var(--muted)">—</span>'}</td>
       <td style="font-weight:700;font-size:1.05rem">${fmtInt(item.qty)} <span style="color:var(--muted);font-size:12px">${esc(item.unit||'')}</span></td>
       <td>
