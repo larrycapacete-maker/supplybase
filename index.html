@@ -532,7 +532,7 @@
         <input type="number" id="lf-qty" min="0" placeholder="0">
       </div>
       <div class="form-group">
-        <label>Performed By</label>
+        <label>Performed By *</label>
         <input type="text" id="lf-by" placeholder="Name or team">
       </div>
       <div class="form-group">
@@ -1425,6 +1425,8 @@ function saveLog() {
   if (!itemId) { alert('Select an item.'); return; }
   if (!type) { alert('Select a transaction type.'); return; }
   if (isNaN(qty) || qty <= 0) { alert('Enter a valid quantity.'); return; }
+  const by = document.getElementById('lf-by').value.trim();
+  if (!by) { alert('Performed By is required.'); return; }
   const item = db.items.find(i => i.id === itemId);
   if (!item) return;
   const originalQty = item.qty;
@@ -1439,7 +1441,7 @@ function saveLog() {
     id: uid(), itemId, type,
     qty: type === 'adjust' ? newQty - originalQty : qty,
     absQty: newQty,
-    by: document.getElementById('lf-by').value.trim(),
+    by: by,
     date: logDate,
     ref: document.getElementById('lf-ref').value.trim(),
     notes: document.getElementById('lf-notes').value.trim(),
